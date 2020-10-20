@@ -17,6 +17,9 @@ static byte brightness;
 #include "stripEffects.h"
 
 void setup() {
+
+  randomSeed(analogRead(0));
+
   brightness = 10;
   Serial.begin(9600);
   Serial.print("init\r\n");

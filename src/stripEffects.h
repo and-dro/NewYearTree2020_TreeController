@@ -22,7 +22,10 @@ void setHSV(uint8_t index, uint8_t h, uint8_t s, uint8_t v)
 }
 void matrixHSV(uint8_t row, uint8_t column, uint8_t h, uint8_t s, uint8_t v) 
 {
-  setHSV(column * LEDS_ROWS + (column % 2 == 0 ? row : LEDS_ROWS - row - 1  ), h, s, v);
+  if(row < LEDS_ROWS && column < LEDS_COLUMNS)
+  {
+    setHSV(column * LEDS_ROWS + (column % 2 == 0 ? row : LEDS_ROWS - row - 1  ), h, s, v);
+  }
 }
 
 
