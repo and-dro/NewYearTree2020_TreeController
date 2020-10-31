@@ -13,6 +13,7 @@ LEDdata leds[NUMLEDS];  // буфер ленты типа LEDdata (размер 
 microLED strip(leds, NUMLEDS, LED_PIN);  // объект лента
 static byte brightness;
 
+#include <Wire.h>
 #include "stateControl.h"
 #include "stripEffects.h"
 
@@ -27,6 +28,10 @@ void setup() {
   strip.fill(mRGB(162,32,16));
   strip.setBrightness(brightness);
 
+  Wire.begin(8);                /* задаем на шине i2c 8 адрес */
+  Wire.onReceive(receiveEvent); /* регистрируем полученное событие */
+  Wire.onRequest(requestEvent); /* регистрируем запрошенное событие */
+ 
   strip.show(); // выводим изменения на ленту
   delay(3000);
   Serial.print("ready\r\n");
