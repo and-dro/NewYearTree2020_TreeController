@@ -2,8 +2,8 @@ enum effects
 {
     OFF,
     SPARK,
-    SPARK_FIXED,
     DROPS,
+    STRIPES,
     LAST_VALUE
 };
 
@@ -11,7 +11,7 @@ struct stateControl
 {
     bool ready;
     uint8_t totalBrightness;
-    uint8_t updateInterval;
+    uint16_t updateInterval;
     effects currentEffect;
     unsigned long updateStripTime;
 } stipState;
@@ -79,5 +79,5 @@ void receiveEvent(int howMany)
 }
 
 void requestEvent() {
- Wire.write("i'm8, what u need?");
+ I2C_writeAnything(RemoteState);
 }

@@ -28,25 +28,46 @@ void matrixHSV(uint8_t row, uint8_t column, uint8_t h, uint8_t s, uint8_t v)
   }
 }
 
+uint8_t minValueFromColor(uint8_t color)
+{
+    if(color<8) return 2;
+    if(color<15) return 10;
+    if(color<25) return 9;
+    if(color<30) return 4;
+    if(color<90) return 3;
+    if(color<110) return 10;
+    if(color<180) return 6;
+    if(color<245) return 10;
+    return 2;
+}
 
 #include "effects/effectsSPARK.h"
 #include "effects/effectsDROPS.h"
+#include "effects/effectsSTRIPES.h"
 
 void stripEffectsInit()
 {
-    stipState.currentEffect = DROPS;
+    stipState.currentEffect = STRIPES;
 
     stipState.totalBrightness = 220;
     stipState.updateInterval = 50;
     
+    strip.setBrightness(stipState.totalBrightness);
     sparkInit();
     dropsInit();
+    stripesInit();
 }
 
 void stripEffectsTick()
 {
   if(!stipState.ready)
   {
+    uint8_t brightness =  map(RemoteState.brightness, 0, 255, 50, 255);
+    if(brightness != stipState.totalBrightness)
+    {
+      stipState.totalBrightness = brightness;
+      strip.setBrightness(stipState.totalBrightness);
+    }
     stipState.ready = true;
     switch (stipState.currentEffect)
     {
@@ -59,17 +80,16 @@ void stripEffectsTick()
             updateStripDelay();
             break;
 
-        case SPARK_FIXED:
-            effects_SPARK_Tick();
-            updateStripDelay();
-            break;
-
         case DROPS:
             effects_DROPS_Tick();
             updateStripDelay();
             break;
+
+        case STRIPES:
+            effects_STRIPES_Tick();
+            updateStripDelay();
+            break;
     }
-    strip.setBrightness(stipState.totalBrightness);
     strip.show(); // выводим изменения на ленту
   }
   if(stipState.updateStripTime != 0 && stipState.updateStripTime < millis())

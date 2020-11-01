@@ -2,13 +2,13 @@ static struct sparkState
 {
     uint8_t active; // сколько элементов уже светится
     uint8_t maxActive;
-    unsigned long nextTime;
+    uint8_t ticksToNew;
 } sparkState;
 
 void sparkInit()
 {
     sparkState.maxActive = NUMLEDS / 5;
-    sparkState.nextTime = 0;
+    sparkState.ticksToNew = 0;
 }
 
 void sparkAddNewLamp();
@@ -17,13 +17,13 @@ void sparkChangeValue();
 void effects_SPARK_Tick(){
   sparkAddNewLamp();
   sparkChangeValue();
-}
 
-int getDelayInterval()
-{
-    if(stipState.currentEffect == SPARK_FIXED) return 1;
-    return 10 * random(1, 3);
 
+    uint16_t updateInterval = map(255 - RemoteState.speed, 0, 255, 1, 40);
+    if(stipState.updateInterval != updateInterval)
+    {
+        stipState.updateInterval = updateInterval;
+    }
 }
 
 uint8_t getNewPosition()
@@ -60,18 +60,22 @@ uint8_t getNewPosition()
 void sparkAddNewLamp()
 {
     if(sparkState.active >= sparkState.maxActive) return;
-    if(sparkState.nextTime > 0 && sparkState.nextTime > millis()) return;
-
-    do
+    //  у нас 74 тика на цикл по одной лампе и 150 ламп, из них 30 горит
+    //  скорость разжигания должна быть одна лампа за 2-3 тика
+    if(sparkState.ticksToNew !=0)
     {
-        uint8_t newIndex = getNewPosition();
-        ledPoints[newIndex].value = random(0, 255);
-        ledPoints[newIndex].mode = 0x81;
+      sparkState.ticksToNew--;
+      return;
+    }
 
-        sparkState.active ++;
-        sparkState.nextTime = 0;
-        
-    } while (sparkState.active < sparkState.maxActive / 3);
+    uint8_t newIndex = getNewPosition();
+    ledPoints[newIndex].value = random(0, 255);
+    ledPoints[newIndex].mode = 0x81;
+
+    sparkState.active ++;
+    
+    sparkState.ticksToNew = sparkState.active < 15 ? 0 : 1;
+
 }
 
 void sparkChangeValue()
@@ -98,11 +102,11 @@ void sparkChangeValue()
         else
         {
           // отправляем в очередь запрета розжига
-          sparkState.nextTime = millis() + getDelayInterval();
           sparkState.active--;
 
           ledPoints[index].mode = 0xFF;
           ledPoints[index].value = max(1, NUMLEDS - sparkState.maxActive * 4);
+
         }
       }
       if ((ledPoints[index].mode & 0xC0) == 0x80)

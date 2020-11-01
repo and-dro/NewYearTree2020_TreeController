@@ -57,43 +57,39 @@ void addNewDrop()
     drops[nextColumn].value = random(10,120);
     
     dropsState.nextTicks = random(LEDS_ROWS * 0.1, LEDS_ROWS * 0.3);
+    dropsState.active++;
 }
 
-uint8_t minValueFromColor(uint8_t color)
-{
-    if(color<8) return 2;
-    if(color<15) return 10;
-    if(color<25) return 9;
-    if(color<30) return 4;
-    if(color<90) return 3;
-    if(color<110) return 10;
-    if(color<180) return 6;
-    if(color<245) return 10;
-    return 2;
-}
 void moveDrops()
 {
     for (uint8_t i = 0; i < LEDS_COLUMNS; i++)
     {
-        drops[i].head--;
         if(drops[i].active)
         {
+            drops[i].head--;
             uint8_t minValue = minValueFromColor(drops[i].color);
-            for(uint8_t j = 0; j<DROP_SIZE; j++)
+            for(uint8_t j = 0; j < DROP_SIZE; j++)
                 matrixHSV(drops[i].head + j, i, drops[i].color, 255, map(dropLine[j], 10, 255, minValue, drops[i].value));
-        }
-        if(drops[i].head == 0)
-        {
-            drops[i].active = false;
-            drops[i].wait = (LEDS_COLUMNS - dropsState.maxActive) / 2;
+            
+            if(drops[i].head == 0)
+            {
+                drops[i].active = false;
+                drops[i].wait = (LEDS_COLUMNS - dropsState.maxActive) / 2;
+                dropsState.active--;
+            }
         }
     }
 }
-
 
 void effects_DROPS_Tick()
 {
     clearAll();
     addNewDrop();
     moveDrops();
+
+    uint16_t updateInterval = map(255 - RemoteState.speed, 0, 255, 5, 200);
+    if(stipState.updateInterval != updateInterval)
+    {
+        stipState.updateInterval = updateInterval;
+    }
 }
