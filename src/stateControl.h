@@ -44,7 +44,7 @@ static volatile remoteState RemoteState;
 
 void updateState()
 {
-  if(RemoteState.mode <  effects::LAST_VALUE)
+  if(RemoteState.mode <  effects::LAST_VALUE && stipState.currentEffect != (effects)RemoteState.mode)
   {
     // stipState.currentEffect = (effects)RemoteState.mode;
     NewMode.active = true;
