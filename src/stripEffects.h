@@ -44,10 +44,11 @@ uint8_t minValueFromColor(uint8_t color)
 #include "effects/effectsSPARK.h"
 #include "effects/effectsDROPS.h"
 #include "effects/effectsSTRIPES.h"
+#include "effects/effectsMARKING.h"
 
 void stripEffectsInit()
 {
-    stipState.currentEffect = STRIPES;
+    stipState.currentEffect = MARKING;
 
     stipState.totalBrightness = 220;
     stipState.updateInterval = 50;
@@ -56,6 +57,7 @@ void stripEffectsInit()
     sparkInit();
     dropsInit();
     stripesInit();
+    markingInit();
 }
 
 void stripEffectsTick()
@@ -90,6 +92,11 @@ void stripEffectsTick()
 
         case STRIPES:
             effects_STRIPES_Tick();
+            updateStripDelay();
+            break;
+
+        case MARKING:
+            effects_MARKING_Tick();
             updateStripDelay();
             break;
 

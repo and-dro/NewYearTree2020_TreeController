@@ -4,6 +4,7 @@ enum effects
     SPARK,
     DROPS,
     STRIPES,
+    MARKING,
     LAST_VALUE
 };
 

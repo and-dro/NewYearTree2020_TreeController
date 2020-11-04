@@ -25,18 +25,16 @@ void setup() {
   Serial.begin(9600);
   Serial.print("init\r\n");
   pinMode(LED_BUILTIN, OUTPUT); 
-  strip.fill(mRGB(162,32,16));
-  strip.setBrightness(brightness);
 
   Wire.begin(8);                /* задаем на шине i2c 8 адрес */
   Wire.onReceive(receiveEvent); /* регистрируем полученное событие */
   Wire.onRequest(requestEvent); /* регистрируем запрошенное событие */
  
-  strip.show(); // выводим изменения на ленту
+  stripEffectsInit();
+  stripEffectsTick();
   delay(3000);
   Serial.print("ready\r\n");
 
-  stripEffectsInit();
 
 }
 
