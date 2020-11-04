@@ -21,8 +21,7 @@ void effects_MARKING_Tick()
     }
   }
   color_shift += 2;
-  // uint16_t updateInterval = map(255 - RemoteState.speed, 0, 255, 1, 40);
-  uint16_t updateInterval = map(255 - 128, 0, 255, 1, 10);
+  uint16_t updateInterval = map(255 - RemoteState.speed, 0, 255, 1, 40);
   if(stipState.updateInterval != updateInterval)
   {
       stipState.updateInterval = updateInterval;
