@@ -16,6 +16,14 @@ struct stateControl
     unsigned long updateStripTime;
 } stipState;
 
+struct newModeControl
+{
+  bool active;
+  effects newEffect;
+  unsigned long downTime;
+  unsigned long finalTime;
+} NewMode;
+
 struct pixelData {
   uint8_t mode, value;
 }; // параметры одного элемента
@@ -37,7 +45,25 @@ void updateState()
 {
   if(RemoteState.mode <  effects::LAST_VALUE)
   {
-    stipState.currentEffect = (effects)RemoteState.mode;
+    // stipState.currentEffect = (effects)RemoteState.mode;
+    NewMode.active = true;
+    NewMode.newEffect = (effects)RemoteState.mode;
+    if(stipState.currentEffect == OFF)
+    {
+      NewMode.downTime = 0;
+    }
+    else
+    {
+      NewMode.downTime = millis() + 500;
+    }
+    if(NewMode.newEffect == OFF)
+    {
+      NewMode.finalTime = 0;
+    }
+    else
+    {
+        NewMode.finalTime = (NewMode.downTime == 0 ? millis() : NewMode.downTime) + 500;
+    }
   }
   Serial.print("state update");
   Serial.println();
@@ -80,4 +106,88 @@ void receiveEvent(int howMany)
 
 void requestEvent() {
  I2C_writeAnything(RemoteState);
+}
+
+uint8_t newModeBrightnessHandler(uint8_t brightness)
+{
+    if(!NewMode.active)
+    {
+      return brightness;
+    }
+
+    uint8_t interval = 10;
+
+    if(NewMode.downTime != 0) // режим гашения
+    {
+        if(NewMode.downTime > millis())
+        {
+            interval = 1 + (NewMode.downTime - millis()) / 50;
+        }
+        else
+        {
+          NewMode.downTime = 0;
+        }
+    }
+
+    if(NewMode.downTime == 0) // режим разжигания
+    {
+      // гашение завершено, перейдем к разжиганию
+      if(stipState.currentEffect != NewMode.newEffect) stipState.currentEffect = NewMode.newEffect;
+
+      if(NewMode.finalTime != 0)
+      {
+        if(NewMode.finalTime > millis())
+        {
+          interval = (5000 - (NewMode.finalTime - millis())) / 50;
+        }
+        else
+        {
+          NewMode.finalTime = 0;
+        }
+      }
+      else
+      {
+        NewMode.active = false;
+        return brightness;
+      }
+    }
+  uint8_t upperBound = 0;
+  switch (interval)
+  {
+  case 10:
+    upperBound = 90;
+    break;
+  case 9:
+    upperBound = 81;
+    break;
+  case 8:
+    upperBound = 63;
+    break;
+  case 7:
+    upperBound = 47;
+    break;
+  case 6:
+    upperBound = 35;
+    break;
+  case 5:
+    upperBound = 26;
+    break;
+  case 4:
+    upperBound = 20;
+    break;
+  case 3:
+    upperBound = 16;
+    break;
+  case 2:
+    upperBound = 12;
+    break;
+  case 1:
+    upperBound = 8;
+    break;
+  
+  default:
+    upperBound = 100;
+    break;
+  }
+  return (1.0 * upperBound / 100.0) * brightness;
 }

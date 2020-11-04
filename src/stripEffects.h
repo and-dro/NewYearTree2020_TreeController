@@ -63,11 +63,14 @@ void stripEffectsTick()
   if(!stipState.ready)
   {
     uint8_t brightness =  map(RemoteState.brightness, 0, 255, 50, 255);
-    if(brightness != stipState.totalBrightness)
+    if(brightness != stipState.totalBrightness && !NewMode.active)
     {
       stipState.totalBrightness = brightness;
       strip.setBrightness(stipState.totalBrightness);
     }
+    uint8_t changeModeBrightness = newModeBrightnessHandler(brightness);
+    if(changeModeBrightness != brightness)strip.setBrightness(changeModeBrightness);
+
     stipState.ready = true;
     switch (stipState.currentEffect)
     {
@@ -88,6 +91,9 @@ void stripEffectsTick()
         case STRIPES:
             effects_STRIPES_Tick();
             updateStripDelay();
+            break;
+
+        case LAST_VALUE:
             break;
     }
     strip.show(); // выводим изменения на ленту
