@@ -20,6 +20,17 @@ void effects_MARKING_Tick()
       matrixHSV(r, c, c * (120 / LEDS_COLUMNS) + color_shift + 80, 255, 40);
     }
   }
+  if(STAR_SIZE)
+  {
+    for (uint8_t node = 0; node < 5; node++)
+    {
+      for (uint8_t shift = 0; shift < STAR_SIZE; shift++)
+      {
+        starHSV(node, shift, node * 51 + color_shift, 255, 60);
+      }
+    }
+  }
+
   color_shift += 2;
   uint16_t updateInterval = map(255 - RemoteState.speed, 0, 255, 1, 40);
   if(stipState.updateInterval != updateInterval)

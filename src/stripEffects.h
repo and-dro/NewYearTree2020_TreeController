@@ -27,6 +27,13 @@ void matrixHSV(uint8_t row, uint8_t column, uint8_t h, uint8_t s, uint8_t v)
     setHSV(column * LEDS_ROWS + (column % 2 == 0 ? row : LEDS_ROWS - row - 1  ), h, s, v);
   }
 }
+void starHSV(uint8_t node, uint8_t shift, uint8_t h, uint8_t s, uint8_t v) 
+{
+  if(node < 5 && shift < STAR_SIZE)
+  {
+    strip.setHSV(STAR_START + node * STAR_SIZE + shift, h, s, v);
+  }
+}
 
 uint8_t minValueFromColor(uint8_t color)
 {
@@ -48,7 +55,15 @@ uint8_t minValueFromColor(uint8_t color)
 
 void stripEffectsInit()
 {
-    stipState.currentEffect = MARKING;
+    RemoteState.speed = 125;
+    RemoteState.brightness = 255;
+
+    stipState.currentEffect = SPARK;
+    // SPARK,
+    // DROPS,
+    // STRIPES,
+    // MARKING,
+
 
     stipState.totalBrightness = 220;
     stipState.updateInterval = 50;

@@ -66,8 +66,10 @@ void updateState()
         NewMode.finalTime = (NewMode.downTime == 0 ? millis() : NewMode.downTime) + 500;
     }
   }
-  Serial.print("state update");
-  Serial.println();
+  #ifdef SERDEBUG 
+    Serial.print("state update");
+    Serial.println();
+  #endif
 }
 
 template <typename T> int I2C_writeAnything (const T& value)
@@ -100,7 +102,9 @@ void receiveEvent(int howMany)
     while (Wire.available()) 
     {
         char c = Wire.read();
-        Serial.print(c);
+        #ifdef SERDEBUG 
+          Serial.print(c);
+        #endif
     }
   }
 }
@@ -132,26 +136,13 @@ uint8_t newModeBrightnessHandler(uint8_t brightness)
 
     if(NewMode.downTime == 0) // режим разжигания
     {
-      // гашение завершено, перейдем к разжиганию
+      // гашение завершено, перейдем к новому эффекту
       if(stipState.currentEffect != NewMode.newEffect) stipState.currentEffect = NewMode.newEffect;
 
-      if(NewMode.finalTime != 0)
-      {
-        if(NewMode.finalTime > millis())
-        {
-          interval = (5000 - (NewMode.finalTime - millis())) / 50;
-        }
-        else
-        {
-          NewMode.finalTime = 0;
-        }
-      }
-      else
-      {
-        NewMode.active = false;
-        return brightness;
-      }
+      NewMode.active = false;
+
     }
+
   uint8_t upperBound = 0;
   switch (interval)
   {
