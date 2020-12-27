@@ -9,7 +9,7 @@
 #define NUMLEDS LEDS_ROWS * LEDS_COLUMNS + LEDS_STAR  // кол-во светодиодов
 #define ORDER_GRB     // порядок цветов ORDER_GRB / ORDER_RGB / ORDER_BRG
 #define COLOR_DEBTH 3 // цветовая глубина: 1, 2, 3 (в байтах)
-#define SERDEBUG
+#define SERDEBUG0
 
 #include "..\lib\microLED\microLED.h" // разместить обязательно ПОСЛЕ определения параметров ленты
 

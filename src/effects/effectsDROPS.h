@@ -111,7 +111,7 @@ void moveDropsStar()
     {
       for (uint8_t shift = 0; shift < STAR_SIZE; shift++)
       {
-        starHSV(node, shift, node * 51 + shift * 5 + dropsState.color_shift, 255, 40);
+        starHSV(4 - node, shift, node * 51 + shift * 5 + dropsState.color_shift, 255, 40);
       }
     }
     if(dropsState.skip == 0)

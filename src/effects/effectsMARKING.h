@@ -26,7 +26,7 @@ void effects_MARKING_Tick()
     {
       for (uint8_t shift = 0; shift < STAR_SIZE; shift++)
       {
-        starHSV(node, shift, node * 51 + color_shift, 255, 60);
+        starHSV(4 - node, shift, node * 51 + color_shift, 255, 60);
       }
     }
   }
